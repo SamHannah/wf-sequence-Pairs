@@ -30,11 +30,11 @@ shinyServer(
                                   legend.position="top")
       
       dp<- ggplot(outs[[1]], aes(Quartiles, Mean.deltaP, group= Test.Item, linetype=Test.Item, shape=Test.Item))+
-                        geom_line(size=1.0)+geom_point(size=4)+ylim(min(outs[[1]]$Mean.delta-outs[[1]]$CI),
-                        max(outs[[1]]$Mean.deltaP+outs[[1]]$CI))+scale_shape_manual(name="HF Test item ", values=c(0,1))+
-                        scale_linetype_manual(name="HF Test item ", values=c(1,3))+geom_hline(aes(yintercept=0)) + 
-                        geom_errorbar(aes(ymin=Mean.deltaP-CI, ymax=Mean.deltaP+CI), width=0.15, lty=1)+
-                        labs(x="Trial Quartile", y=expression("Mean "~Delta~italic(P)~"('old')"))+themePro
+          geom_line(size=1.0)+geom_point(size=4)+ylim(-0.05, 0.20)+ 
+          scale_shape_manual(name="HF Test item ", values=c(0,1))+ scale_linetype_manual(name="HF Test item ", 
+          values=c(1,3))+geom_hline(aes(yintercept=0)) + geom_errorbar(aes(ymin=Mean.deltaP-CI, ymax=Mean.deltaP+CI), 
+          width=0.15, lty=1)+scale_x_discrete(limits=c(1,2),labels=c("First", "Second"))+
+          labs(x="Trial Half", y=expression("Mean "~Delta~italic(P)~"('old')"))+themePro
       
       means<- ggplot(outs[[3]], aes(Test.Item, Mean.P.old))+geom_bar(stat="identity", fill=c("grey55", "black","black","grey55"))+
                         geom_errorbar(aes(ymin=Mean.P.old-SE, ymax=Mean.P.old+SE),width=0.15, 
