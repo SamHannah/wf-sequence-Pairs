@@ -13,7 +13,7 @@ sequence<- function(SF1, dp, L, A, N_subjects){
   HF = 5; LF = 1
   Frequency<- 0    
   N_el = 100; N_items = 80
-  N_seqSegment = 4                       # cutting quartet means into quarters (N_seqSegment = 4), deciles (N_seqSegment =10)?
+  N_seqSegment = 2                       # cutting quartet means into quarters (N_seqSegment = 4), deciles (N_seqSegment =10)?
   N_trialPres = (N_items/2)/N_seqSegment
   N_study = N_items*2
   N_types = 4; N_test = N_items*N_types      
@@ -258,34 +258,37 @@ sequence<- function(SF1, dp, L, A, N_subjects){
   quartError<- apply(summaryQ, c(1,2), se)
   dpOldMeans<- apply(dPoldQ, c(1,2), qMean)  
   dpOldError<- apply(dPoldQ, c(1,2), se)
+  
   #turn these into data frames  
-  dPold<- data.frame(Quartiles=factor(8, levels = c(1,2,3,4)), "Test.Item"=factor(8, levels=c("Lure", "Target")), 
-                     "Mean.deltaP" = numeric(8),SE = numeric(8))
-  dPold[,1]<- rep(c(1:4), times=2)
-  dPold[1:4,2]<- "Lure"
-  dPold[5:8,2]<- "Target"
-  dPold[1:4,3]<- dpOldMeans[,1]
-  dPold[5:8,3]<- dpOldMeans[,2]
-  dPold[1:4,4]<- dpOldError[,1]
-  dPold[5:8,4]<- dpOldError[,2] 
+  #turn these into data frames  
+  dPold<- data.frame(Quartiles=factor(N_seqSegment*2, levels = seq(1:N_seqSegment)), 
+                     "Test.Item"=factor(N_seqSegment*2, levels=c("Lure", "Target")), 
+                     "Mean.deltaP" = numeric(N_seqSegment*2),SE = numeric(N_seqSegment*2))
+  dPold[,1]<- rep(seq(1:N_seqSegment), times=2)
+  dPold[1:N_seqSegment,2]<- "Lure"
+  dPold[(N_seqSegment+1):(N_seqSegment*2),2]<- "Target"
+  dPold[1:N_seqSegment,3]<- dpOldMeans[,1]
+  dPold[(N_seqSegment+1):(N_seqSegment*2),3]<- dpOldMeans[,2]
+  dPold[1:N_seqSegment,4]<- dpOldError[,1]
+  dPold[(N_seqSegment+1):(N_seqSegment*2),4]<- dpOldError[,2] 
   dPold<- dPold %>% mutate("CI"=CI(SE))
   
-  qMeans<- data.frame(Quartiles=factor(N_seqSegment*N_types, levels = c(1,2,3,4)), 
+  qMeans<- data.frame(Quartiles=factor(N_seqSegment*N_types, levels = seq(1:N_seqSegment)), 
                       "Test.Item"=factor(N_seqSegment*N_types,levels=c("HFnew(LFnew)", "HFnew(LFold)","HFold(LFnew)","HFold(LFold)" )),
                       "Mean.P.old" = numeric(N_seqSegment*N_types),SE = numeric(N_seqSegment*N_types))
-  qMeans[,1]<- c(rep(seq(1:4), times=4))
-  qMeans[1:4,2]<- "HFnew(LFnew)"
-  qMeans[5:8,2]<- "HFnew(LFold)"
-  qMeans[9:12,2]<- "HFold(LFnew)"
-  qMeans[13:16,2]<- "HFold(LFold)"
-  qMeans[1:4,3]<- quartMeans[,1]
-  qMeans[5:8,3]<- quartMeans[,2]
-  qMeans[9:12,3]<- quartMeans[,3]
-  qMeans[13:16,3]<- quartMeans[,4]
-  qMeans[1:4,4]<- quartError[,1]
-  qMeans[5:8,4]<- quartError[,2]
-  qMeans[9:12,4]<- quartError[,3]
-  qMeans[13:16,4]<- quartError[,4]
+  qMeans[,1]<- c(rep(seq(1:N_seqSegment), times=4))
+  qMeans[1:N_seqSegment,2]<- "HFnew(LFnew)"
+  qMeans[(N_seqSegment+1):(N_seqSegment*2),2]<- "HFnew(LFold)"
+  qMeans[((N_seqSegment*2)+1):(N_seqSegment*3),2]<- "HFold(LFnew)"
+  qMeans[((N_seqSegment*3)+1):(N_seqSegment*4),2]<- "HFold(LFold)"
+  qMeans[1:N_seqSegment,3]<- quartMeans[,1]
+  qMeans[(N_seqSegment+1):(N_seqSegment*2),3]<- quartMeans[,2]
+  qMeans[((N_seqSegment*2)+1):(N_seqSegment*3),3]<- quartMeans[,3]
+  qMeans[((N_seqSegment*3)+1):(N_seqSegment*4),3]<- quartMeans[,4]
+  qMeans[1:N_seqSegment,4]<- quartError[,1]
+  qMeans[(N_seqSegment+1):(N_seqSegment*2),4]<- quartError[,2]
+  qMeans[((N_seqSegment*2)+1):(N_seqSegment*3),4]<- quartError[,3]
+  qMeans[((N_seqSegment*3)+1):(N_seqSegment*4),4]<- quartError[,4]
   qMeans<- qMeans %>% mutate("CI" = CI(SE))
   
   allMeans<- data.frame("Test.Item"=factor(4, levels=c("LF Lure", "HF Lure","HF Target","LF Target" )), 
